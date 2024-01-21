@@ -3,14 +3,44 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+app.set("view engine","ejs");
+
 app.get('/',function(req,res){
     var today = new Date();
     var currentDay= today.getDay();
-    if(currentDay==6 || currentDay==0){
-        res.send("<h1>Its a weekEnd</h1>");
-    }else{
-        res.send("<h1>Its a weekDay<h1>");
+    var day="";
+
+    switch (currentDay) {
+        case 0:
+            day="Sunday"
+            break;
+        case 1:
+            day="Monday"
+            break;
+        case 2:
+            day="Tuesday"
+            break;
+        case 3:
+            day="Wednesday"
+            break;
+        case 4:
+            day="Thursday"
+            break;
+        case 5:
+            day="Friday"
+            break;
+        case 6:
+            day="Saturday"
+            break;
+        case 7:
+            day="Sunday"
+            break;
+            
+        default:
+            console.log("Error in getting days"+currentDay);
+            break;
     }
+    res.render("list",{kindDay:day});
 });
 
 app.listen(3000,function(){
