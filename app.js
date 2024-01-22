@@ -1,14 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const date = require(__dirname + "/date.js"); 
 
 const app = express();
 
-let items =['Wakeup','Drink water','Do Exercise']; // array of list items
+const items =['Wakeup','Drink water','Do Exercise']; // array of list items
 
 app.set("view engine","ejs"); //To run ejs
 
-app.use(bodyParser.urlencoded({extended:true}));
-
+app.use(bodyParser.urlencoded({extended:true})); //using body parser module
 app.use(express.static("public")); //setting static files public to use all files like css ect..
 
 app.listen(3000,function(){
@@ -16,17 +16,15 @@ app.listen(3000,function(){
 });
 
 app.get("/",function(req,res){
-    let options = { weekday: 'long', month: 'long', day: 'numeric' };
-    let today  = new Date();
     
-    let day= today.toLocaleDateString("en-US",options); //javascript method to get date and format
+    const day = date.getDate(); //getting date from date.js module
 
     res.render("list",{kindOfDay:day,newItems:items}); // passing the day to list.ejs 
     
 });
 
 app.post("/",function(req,res){
-    let item =req.body.newItem;
+    const item =req.body.newItem;
     items.push(item); //pushing the new item to items array
     
     res.redirect("/");
