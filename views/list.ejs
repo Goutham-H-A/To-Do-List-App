@@ -6,6 +6,21 @@
     <title>Home</title>
 </head>
 <body>
-    <h1><%=kindDay%></h1>
+    <h1><%= kindOfDay %> ToDoList</h1>
+    <ul>
+        <li>Go to gym</li>
+        <li>Go  study</li>
+        <li>Eat </li>
+        
+        <% for(var i=0; i < newItems.length; i++) { %> 
+              <li><%= newItems[i]%></li>
+        <%} %>
+
+
+    </ul>
+    <form action="/" method="post">
+        <input type="text" name="newItem">
+        <button type="submit" name="button">Add</button>
+    </form>
 </body>
 </html>
