@@ -9,10 +9,6 @@ app.use(bodyParser.urlencoded({extended:true})); //using body parser module
 app.use(express.static("public")); //setting static files public to use all files like css ect..
 
  mongoose.connect('mongodb://127.0.0.1:27017/todolistDB'); //cconnect to database
-  
-app.listen(3000,function(){
-    console.log("Server started at port 3000");
-});
 
 const itemsSchema = new mongoose.Schema({
     name: String
@@ -57,6 +53,15 @@ app.post("/",function(req,res){
     res.redirect("/");
 });
 
-app.post("/delete",function(req,res){
-  console.log(req.body);
+app.post("/delete", function(req, res) {
+  const checkedItemId = req.body.checkbox;
+  Item.findByIdAndRemove(checkedItemId , function(err) {
+    if (!err) {
+      console.log("Successfully deletd the Id");
+    }
+    res.redirect("/");
+  });
+});
+app.listen(5000,function(){
+  console.log("Server started at port 3000");
 });
