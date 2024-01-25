@@ -1,32 +1,62 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const date = require(__dirname + "/date.js"); 
 
 const app = express();
-
-const items =['Wakeup','Drink water','Do Exercise']; // array of list items
-
 app.set("view engine","ejs"); //To run ejs
-
 app.use(bodyParser.urlencoded({extended:true})); //using body parser module
 app.use(express.static("public")); //setting static files public to use all files like css ect..
 
+ mongoose.connect('mongodb://127.0.0.1:27017/todolistDB'); //cconnect to database
+  
 app.listen(3000,function(){
     console.log("Server started at port 3000");
 });
 
-app.get("/",function(req,res){
-    
-    const day = date.getDate(); //getting date from date.js module
+const itemsSchema = new mongoose.Schema({
+    name: String
+  });
 
-    res.render("list",{kindOfDay:day,newItems:items}); // passing the day to list.ejs 
-    
-});
+  const Item = new mongoose.model('Item', itemsSchema);
 
+  const item1 = new Item({ name: 'Wake UP' }); //creating three items
+  const item2 = new Item({ name: 'Drink Water' });
+  const item3 = new Item({ name: 'Exercise' });
+
+  const defaultList = [item1,item2,item3]; //storing it in an array of default items
+  
+  app.get("/", async function(req, res) {
+    try {
+      const day = date.getDate(); // Getting date from date.js module
+  
+      // Use async/await to wait for the result of the find operation
+      const foundItems = await Item.find({});
+  
+      if (foundItems.length === 0) {
+        // Insert defaultList if no items are found
+        await Item.insertMany(defaultList);
+        console.log('Default items inserted successfully.');
+      }
+  
+      // Render the list whether it was initially empty or not
+      res.render("list", { kindOfDay: day, newItems: foundItems });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error'); // Adjust the status and message as needed
+    }
+  });
+  
 app.post("/",function(req,res){
-    const item =req.body.newItem;
-    items.push(item); //pushing the new item to items array
-    
+    const item =req.body.newItems;
+    console.log(item);
+    const enterItem = new Item ({
+      name:item
+    });
+    enterItem.save();
     res.redirect("/");
 });
 
+app.post("/delete",function(req,res){
+  console.log(req.body);
+});
