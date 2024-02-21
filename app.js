@@ -8,7 +8,7 @@ app.set("view engine","ejs"); //To run ejs
 app.use(bodyParser.urlencoded({extended:true})); //using body parser module
 app.use(express.static("public")); //setting static files public to use all files like css ect..
 
- mongoose.connect('mongodb://127.0.0.1:27017/todolistDB'); //cconnect to database
+ mongoose.connect('mongodb:/127.0.0.1:27017/todolistDB'); //cconnect to database
 
 const itemsSchema = new mongoose.Schema({
     name: String
@@ -55,13 +55,25 @@ app.post("/",function(req,res){
 
 app.post("/delete", function(req, res) {
   const checkedItemId = req.body.checkbox;
-  Item.findByIdAndRemove(checkedItemId , function(err) {
-    if (!err) {
-      console.log("Successfully deletd the Id");
-    }
-    res.redirect("/");
-  });
+  console.log(checkedItemId);
+  // Assuming you have defined your Item model using mongoose.Schema
+
+Item.findByIdAndDelete(checkedItemId)
+.then((deletedItem) => {
+  if (deletedItem) {
+    console.log("Successfully deleted the item with ID: " + checkedItemId);
+  } else {
+    console.error("Item not found with ID: " + checkedItemId);
+  }
+  // Redirect to the root route after deletion
+  res.redirect("/");
+})
+.catch((err) => {
+  console.error("Error deleting item with ID: " + checkedItemId);
+  // Handle other errors if needed
+  res.redirect("/"); // Redirect in case of an error
 });
-app.listen(5000,function(){
+});
+app.listen(3000,function(){
   console.log("Server started at port 3000");
 });
